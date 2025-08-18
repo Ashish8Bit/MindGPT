@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindGPT - Free AI Assistant</title>
+    <link id="favicon" rel="icon" type="image/ico" href="assets/MindGPT.ico">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
+    <script>
+        // Apply theme and favicon from localStorage immediately to prevent FOUC
+        const savedTheme = localStorage.getItem('ai-assistant-theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        // This script is executed after the favicon link element is in the DOM
+        document.getElementById('favicon').href = savedTheme === 'dark' ? 'assets/MindGPT-white.ico' : 'assets/MindGPT.ico';
+    </script>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>MindGPT</h1>
+            </div>
+            <div id="history-list">
+                <!-- History items will be injected here by script.js -->
+            </div>
+            <div class="sidebar-footer">
+                <button id="clear-history-button" class="utility-button" title="Clear history">Clear History</button>
+                <button id="theme-toggle-button" class="utility-button" title="Toggle theme">Dark Mode</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="content-wrapper">
+                <form id="post-generator-form">
+                    <label for="post-topic">Type what you think</label>
+                    <div class="textarea-wrapper">
+                        <textarea id="post-topic" name="post-topic" rows="3" placeholder="e.g., MindGPT is here for you"></textarea>
+                        <div id="suggestions-container"></div>
+                    </div>
+                    <label for="post-tone">Response Style</label>
+                    <select id="post-tone" name="post-tone">
+                        <option value="Default" selected>Default (Helpful)</option>
+                        <option value="Professional">Professional</option>
+                        <option value="Casual">Casual</option>
+                        <option value="Simple">Simple</option>
+                        <option value="Creative">Creative</option>
+                    </select>
+                    <button type="submit">
+                        <span class="button-text">Generate</span>
+                        <span class="spinner"></span>
+                    </button>
+                </form>
+
+                <section id="result-container" style="display: none;">
+                    <div class="prompt-display">
+                        <p id="user-prompt-text"></p>
+                    </div>
+                    <div class="result-header">
+                        <h2>Generated Response</h2>
+                        <div class="result-actions">
+                            <button id="regenerate-button" class="utility-button" title="Regenerate response" style="display: none;">Regenerate</button>
+                            <button id="copy-button" class="utility-button" title="Copy to clipboard" style="display: none;">Copy</button>
+                        </div>
+                    </div>
+                    <div id="post-output" class="placeholder"></div>
+                    <div id="search-links-container" style="display: none;">
+                        <h3>Explore Further</h3>
+                        <div id="search-links-list"></div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    <button id="menu-toggle-button" title="Toggle Menu" aria-controls="sidebar" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    <div id="overlay"></div>
+    <script src="script.js"></script>
+</body>
+</html>
