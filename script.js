@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const topicTextarea = document.getElementById('post-topic');
     const historyList = document.getElementById('history-list');
     const clearHistoryButton = document.getElementById('clear-history-button');
+    const historySearchInput = document.getElementById('history-search-input');
     const themeToggleButton = document.getElementById('theme-toggle-button');
     const favicon = document.getElementById('favicon');
 
@@ -67,7 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (!response.ok) {
-                // Use the error from the server response body if it exists
+                // The server now sends specific error messages in the `data.error` field.
+                // This will catch the 429 quota message and other server-side errors.
                 throw new Error(data.error || 'An unknown server error occurred.');
             }
 
@@ -125,13 +127,25 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const renderHistory = () => {
+        const searchTerm = historySearchInput.value.toLowerCase();
         historyList.innerHTML = ''; // Clear existing list
+
         if (history.length === 0) {
             historyList.innerHTML = '<p class="no-history">Your generation history will appear here.</p>';
             return;
         }
 
-        history.forEach(entry => {
+        const filteredHistory = history.filter(entry =>
+            entry.topic.toLowerCase().includes(searchTerm)
+        );
+
+        if (filteredHistory.length === 0) {
+            // This message shows if there's history but no search match
+            historyList.innerHTML = '<p class="no-history">No matching history found.</p>';
+            return;
+        }
+
+        filteredHistory.forEach(entry => {
             const item = document.createElement('div');
             item.classList.add('history-item');
 
@@ -179,6 +193,10 @@ document.addEventListener('DOMContentLoaded', () => {
     clearHistoryButton.addEventListener('click', () => {
         history = [];
         saveHistory();
+        renderHistory();
+    });
+
+    historySearchInput.addEventListener('input', () => {
         renderHistory();
     });
 

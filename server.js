@@ -128,15 +128,19 @@ app.post('/generate-post', apiLimiter, async (req, res) => {
         // Send the generated post back to the client
         res.json({ responseText: responseTextLines.join('\n').trim(), searchQueries });
     } catch (error) {
-        // Log the error in a more structured way to the server console
         console.error('\n--- ERROR CALLING GEMINI API ---');
         console.error('Timestamp:', new Date().toISOString());
-        // The actual error message from the Gemini SDK is often in the 'message' property
         console.error('Error Details:', error.message || 'No specific message available.');
-        console.error('Full Error Object:', error); // Log the full error object for all details
         console.error('--- END OF ERROR ---\n');
-        // Send the specific error message from the catch block to the client for better debugging.
-        res.status(500).json({ error: error.message || 'An unknown server error occurred. Please check the server logs.' });
+
+        // Check if the error message indicates a rate limit / quota issue from Google's side.
+        if (error.message && (error.message.includes('429') || error.message.includes('quota'))) {
+            // Send a specific 429 status code and a user-friendly message.
+            return res.status(429).json({ error: "The daily API quota has been reached. Please try again tomorrow." });
+        }
+
+        // For all other errors, send a generic 500 server error.
+        res.status(500).json({ error: 'An unexpected server error occurred. Please check the server logs.' });
     }
 });
 

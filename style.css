@@ -59,11 +59,39 @@ body {
     margin: 0;
 }
 
+.sidebar-header h1 a {
+    text-decoration: none;
+    color: inherit;
+}
+
 #history-list {
     flex: 1;
     overflow-y: auto;
     margin: 1.5rem 0;
     padding-right: 1rem;
+}
+
+.history-search-container {
+    padding-bottom: 1rem;
+}
+
+#history-search-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-family: 'Poppins', sans-serif;
+    box-sizing: border-box;
+    background-color: var(--container-bg-color);
+    color: var(--text-color);
+    transition: border-color 0.2s;
+}
+
+#history-search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(106, 90, 205, 0.2);
 }
 
 .history-item {
@@ -396,4 +424,35 @@ button.loading .button-text {
     .result-header h2 {
         font-size: 1.2rem;
     }
+}
+
+/* --- About Page Specific Styles --- */
+.about-footer {
+    margin-top: auto;
+}
+
+.about-page h2, .about-page h3 {
+    color: var(--primary-color);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.about-page h2:first-of-type {
+    margin-top: 0;
+}
+
+.about-page p {
+    margin-bottom: 1rem;
+}
+
+.about-page ul {
+    list-style-position: inside;
+    padding-left: 0;
+    margin-bottom: 1rem;
+}
+
+.about-page li {
+    margin-bottom: 0.75rem;
 }

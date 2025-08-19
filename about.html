@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About MindGPT - Free AI Assistant</title>
+    <link id="favicon" rel="icon" type="image/ico" href="assets/MindGPT.ico">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
+    <script>
+        // Apply theme from localStorage immediately to prevent FOUC
+        const savedTheme = localStorage.getItem('ai-assistant-theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        window.addEventListener('DOMContentLoaded', () => {
+            const favicon = document.getElementById('favicon');
+            if (favicon) {
+                favicon.href = savedTheme === 'dark' ? 'assets/MindGPT-white.ico' : 'assets/MindGPT.ico';
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1><a href="index.html">MindGPT</a></h1>
+            </div>
+            <div class="sidebar-footer about-footer">
+                <a href="index.html" class="utility-button">Back to App</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="content-wrapper about-page">
+                <h2>About MindGPT</h2>
+                <p>Welcome to MindGPT, your free, intelligent AI assistant designed to help you generate creative and effective content with ease. Whether you're a student, a professional, or a creative mind, MindGPT is here to streamline your workflow and spark new ideas.</p>
+
+                <h3>Our Mission</h3>
+                <p>Our mission is to make advanced AI accessible to everyone. We believe in the power of artificial intelligence to augment human creativity and productivity. MindGPT was built to be an intuitive, powerful, and completely free tool for anyone who needs a helping hand with writing and idea generation.</p>
+
+                <h3>What is MindGPT?</h3>
+                <p>MindGPT is a web-based application that leverages cutting-edge language models to understand your prompts and generate high-quality text in various styles. Simply type what's on your mind, select a tone, and let our AI do the rest. From professional emails to casual social media posts, MindGPT adapts to your needs.</p>
+
+                <h3>Key Features</h3>
+                <ul>
+                    <li><strong>Versatile Tone Selection:</strong> Choose from styles like Professional, Casual, Simple, and Creative to match your desired output.</li>
+                    <li><strong>Export History:</strong> Save your entire conversation history to a text file for offline access or record-keeping.</li>
+                    <li><strong>Conversation History:</strong> Never lose a great idea. Your past generations are saved locally in your browser for easy access.</li>
+                    <li><strong>Light & Dark Modes:</strong> Work comfortably at any time of day with our sleek theme switcher.</li>
+                    <li><strong>Responsive Design:</strong> Access MindGPT on your desktop, tablet, or mobile device, with a seamless experience across all platforms.</li>
+                    <li><strong>Free to Use:</strong> All core features of MindGPT are available for free.</li>
+                </ul>
+
+                <h3>Get Started</h3>
+                <p>Ready to explore the possibilities? <a href="index.html">Head back to the main page</a>, type your first prompt, and see what MindGPT can create for you!</p>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
