@@ -69,24 +69,33 @@ document.addEventListener('DOMContentLoaded', () => {
                     style: tone // The backend API expects 'style'
                 }),
             });
-
-            const data = await response.json();
-
+    
             if (!response.ok) {
-                // The server now sends specific error messages in the `data.error` field.
-                // This will catch the 429 quota message and other server-side errors.
-                throw new Error(data.error || 'An unknown server error occurred.');
+                // Handle HTTP errors (like 404, 500, etc.)
+                let errorMessage;
+                try {
+                    // The server should send a JSON object with an 'error' key.
+                    const errorData = await response.json();
+                    errorMessage = errorData.error || `Server error: ${response.status}`;
+                } catch (e) {
+                    // If the error response isn't JSON, it's likely a Vercel crash page (HTML).
+                    errorMessage = `Server responded with status ${response.status}. The response was not valid JSON. Check Vercel logs.`;
+                }
+                throw new Error(errorMessage);
             }
-
+    
+            // If response is OK, parse the successful JSON data.
+            const data = await response.json();
+    
             // Display the result
             userPromptText.textContent = `Your prompt: ${topic}`;
             postOutput.textContent = data.responseText;
             resultContainer.style.display = 'block';
             copyButton.style.display = 'inline-block'; // Show the copy button along with the result
-
+    
             // Render search queries
             renderSearchQueries(data.searchQueries);
-
+    
             // Add to history
             const historyEntry = {
                 id: Date.now(),
@@ -98,7 +107,8 @@ document.addEventListener('DOMContentLoaded', () => {
             addToHistory(historyEntry);
         } catch (error) {
             console.error('Fetch Error:', error);
-            postOutput.textContent = `Failed to generate response. Error: ${error.message}. Please make sure the server is running and check the console for more details.`;
+            // The error message is now more descriptive thanks to the logic above.
+            postOutput.textContent = `Failed to generate response. Error: ${error.message}`;
             resultContainer.style.display = 'block';
         } finally {
             // Hide loading state
