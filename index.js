@@ -6,15 +6,16 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const rateLimit = require('express-rate-limit');
 const app = express();
 const PORT = 3000;
-
+ 
+let genAI;
 // Startup check to ensure the API key is loaded
-if (!process.env.GEMINI_API_KEY) {
-    console.error('FATAL ERROR: GEMINI_API_KEY is not defined. Please create a .env file and add your API key.');
-    process.exit(1); // Exit the application with an error code
+if (process.env.GEMINI_API_KEY) {
+    // Access your API key as an environment variable
+    genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+} else {
+    // Log an error if the key is missing, but don't crash the server.
+    console.error('FATAL ERROR: GEMINI_API_KEY is not defined. The API will not be available.');
 }
-
-// Access your API key as an environment variable
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // --- CORS Configuration ---
 // Whitelist of domains allowed to make requests.
@@ -42,12 +43,21 @@ const corsOptions = {
 app.use(cors(corsOptions)); // Use the secure CORS configuration
 app.use(express.json()); // Middleware to parse incoming JSON requests
 
+// Middleware to check if the AI service is configured and available.
+// This prevents crashes if the API key is not set.
+const checkAIService = (req, res, next) => {
+    if (!genAI) {
+        return res.status(503).json({ error: 'Service Unavailable: The AI service is not configured on the server. Please contact the administrator.' });
+    }
+    next();
+};
+
 // Simple request logger middleware to help with debugging
 app.use((req, res, next) => {
     console.log(`Request received: ${req.method} ${req.originalUrl}`);
     next();
 });
-/*
+/* Project Structure Note:
 MindGPT/
 ├── api/
 │   └── index.js      <-- This is your renamed and modified server.js
@@ -60,7 +70,6 @@ MindGPT/
 ├── vercel.json
 └── ... other files */
 
-
 // Rate Limiter: Limit each IP to 15 requests per 5 minutes
 const apiLimiter = rateLimit({
 	windowMs: 5 * 60 * 1000, // 5 minutes
@@ -70,8 +79,8 @@ const apiLimiter = rateLimit({
     message: { error: 'Too many requests from this IP, please try again after 5 minutes.' },
 });
 
-// New endpoint for real-time suggestions
-app.post('/generate-suggestions', apiLimiter, async (req, res) => {
+// New endpoint for real-time suggestions, protected by the service check and rate limiter.
+app.post('/generate-suggestions', checkAIService, apiLimiter, async (req, res) => {
     const { query } = req.body;
 
     // Don't generate for very short or empty queries to save resources
@@ -120,8 +129,8 @@ function getPromptForStyle(topic, style) {
     }
 }
 
-// Define a route for generating the main response
-app.post('/generate-post', apiLimiter, async (req, res) => {
+// Define a route for generating the main response, protected by the service check and rate limiter.
+app.post('/generate-post', checkAIService, apiLimiter, async (req, res) => {
     const { topic, style } = req.body;
 
     if (!topic) {
