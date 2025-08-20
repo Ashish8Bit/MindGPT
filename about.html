@@ -11,12 +11,9 @@
         // Apply theme from localStorage immediately to prevent FOUC
         const savedTheme = localStorage.getItem('ai-assistant-theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
-        window.addEventListener('DOMContentLoaded', () => {
-            const favicon = document.getElementById('favicon');
-            if (favicon) {
-                favicon.href = savedTheme === 'dark' ? 'assets/MindGPT-white.ico' : 'assets/MindGPT.ico';
-            }
-        });
+        // This script is executed after the favicon link element is in the DOM
+        // and can safely update the href.
+        document.getElementById('favicon').href = savedTheme === 'dark' ? 'assets/MindGPT-white.ico' : 'assets/MindGPT.ico';
     </script>
 </head>
 <body>

@@ -53,8 +53,10 @@ document.addEventListener('DOMContentLoaded', () => {
         copyButton.style.display = 'none';
         searchLinksContainer.style.display = 'none'; // Hide previous links
         
+        // /http://localhost:3000/generate-post
+
         try {
-            const response = await fetch('http://localhost:3000/generate-post', {
+            const response = await fetch('https://mindgpt-ai.vercel.app/generate-post', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
