@@ -163,6 +163,7 @@ app.post('/generate-post', apiLimiter, async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`AI Assistant server is running on http://localhost:${PORT}`);
-});
+// This is the crucial change for Vercel deployment.
+// Vercel handles the server lifecycle, so we must not call app.listen().
+// Instead, we export the Express app instance for the serverless environment.
+module.exports = app;
