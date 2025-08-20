@@ -44,9 +44,19 @@ app.use((req, res, next) => {
     console.log(`Request received: ${req.method} ${req.originalUrl}`);
     next();
 });
+/*
+MindGPT/
+├── api/
+│   └── index.js      <-- This is your renamed and modified server.js
+├── assets/
+│   └── ...
+├── about.html
+├── index.html
+├── script.js
+├── style.css
+├── vercel.json
+└── ... other files */
 
-// Serve static files from the root directory (e.g., index.html, style.css)
-app.use(express.static('.'));
 
 // Rate Limiter: Limit each IP to 15 requests per 5 minutes
 const apiLimiter = rateLimit({
