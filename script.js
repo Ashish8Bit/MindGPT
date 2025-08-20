@@ -14,6 +14,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeToggleButton = document.getElementById('theme-toggle-button');
     const favicon = document.getElementById('favicon');
 
+    // --- API Configuration ---
+    // Determine the API base URL based on the hostname to switch between local and production
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const API_BASE_URL = isLocal ? 'http://localhost:3000' : 'https://mindgpt-ai.vercel.app';
+
     // --- HISTORY MANAGEMENT ---
     let history = [];
 
@@ -53,10 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
         copyButton.style.display = 'none';
         searchLinksContainer.style.display = 'none'; // Hide previous links
         
-        // /http://localhost:3000/generate-post
-
         try {
-            const response = await fetch('https://mindgpt-ai.vercel.app/generate-post', {
+            const response = await fetch(`${API_BASE_URL}/generate-post`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

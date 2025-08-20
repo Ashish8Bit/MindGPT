@@ -16,8 +16,27 @@ if (!process.env.GEMINI_API_KEY) {
 // Access your API key as an environment variable
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
+// --- CORS Configuration ---
+// We create a whitelist of domains that are allowed to make requests to this server.
+const allowedOrigins = [
+    'https://mindgpt-ai.vercel.app', // Your Vercel frontend URL
+    'http://localhost:5500',         // Common port for VS Code Live Server
+    'http://127.0.0.1:5500',         // Another address for VS Code Live Server
+];
+
+const corsOptions = {
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps, Postman) or from our whitelist
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    }
+};
+
 // Middleware
-app.use(cors()); // Enable Cross-Origin Resource Sharing for all routes
+app.use(cors(corsOptions)); // Use the secure CORS configuration
 app.use(express.json()); // Middleware to parse incoming JSON requests
 
 // Simple request logger middleware to help with debugging
