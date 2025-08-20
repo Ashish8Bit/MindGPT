@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- API Configuration ---
     // Determine the API base URL based on the hostname to switch between local and production
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    const API_BASE_URL = isLocal ? 'http://localhost:3000' : 'https://mindgpt-ai.vercel.app';
+    const API_BASE_URL = isLocal ? 'http://localhost:3000' : ''; // Use a relative path for production
 
     // --- HISTORY MANAGEMENT ---
     let history = [];
@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- THEME MANAGEMENT ---
     const updateFavicon = (theme) => {
         if (favicon) {
-            favicon.href = theme === 'dark' ? 'assests/MindGPT-white.ico' : 'assests/MindGPT.ico';
+            favicon.href = theme === 'dark' ? 'assets/MindGPT-white.ico' : 'assets/MindGPT.ico';
         }
     };
 
