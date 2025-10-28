@@ -6,8 +6,6 @@
   "scripts": {
     "start": "node api/index.js"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2",
