@@ -427,10 +427,6 @@ button.loading .button-text {
 }
 
 /* --- About Page Specific Styles --- */
-.about-footer {
-    margin-top: auto;
-}
-
 .about-page h2, .about-page h3 {
     color: var(--primary-color);
     border-bottom: 1px solid var(--border-color);

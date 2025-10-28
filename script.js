@@ -3,16 +3,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const postOutput = document.getElementById('post-output');
     const resultContainer = document.getElementById('result-container');
     const copyButton = document.getElementById('copy-button');
+    const regenerateButton = document.getElementById('regenerate-button');
     const searchLinksContainer = document.getElementById('search-links-container');
     const searchLinksList = document.getElementById('search-links-list');
     const userPromptText = document.getElementById('user-prompt-text');
     const generateButton = postGeneratorForm.querySelector('button[type="submit"]');
     const topicTextarea = document.getElementById('post-topic');
+    const toneSelect = document.getElementById('post-tone');
     const historyList = document.getElementById('history-list');
     const clearHistoryButton = document.getElementById('clear-history-button');
     const historySearchInput = document.getElementById('history-search-input');
     const themeToggleButton = document.getElementById('theme-toggle-button');
     const favicon = document.getElementById('favicon');
+    const menuToggleButton = document.getElementById('menu-toggle-button');
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('overlay');
 
     // --- API Configuration ---
     // Determine the API base URL based on the hostname to switch between local and production
@@ -21,6 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- HISTORY MANAGEMENT ---
     let history = [];
+    // Store the last successful submission for the regenerate feature
+    let lastSubmission = { topic: '', tone: '' };
 
     const renderSearchQueries = (queries) => {
         searchLinksList.innerHTML = '';
@@ -40,11 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
         searchLinksContainer.style.display = 'block';
     };
 
-    postGeneratorForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const topic = document.getElementById('post-topic').value;
-        const tone = document.getElementById('post-tone').value;
+    const handleGeneration = async (isRegeneration = false) => {
+        const topic = isRegeneration ? lastSubmission.topic : topicTextarea.value;
+        const tone = isRegeneration ? lastSubmission.tone : toneSelect.value;
 
         if (!topic.trim()) {
             alert('Please enter a topic or question.');
@@ -56,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
         generateButton.disabled = true;
         resultContainer.style.display = 'none';
         copyButton.style.display = 'none';
+        regenerateButton.style.display = 'none';
         searchLinksContainer.style.display = 'none'; // Hide previous links
         
         try {
@@ -91,10 +97,15 @@ document.addEventListener('DOMContentLoaded', () => {
             userPromptText.textContent = `Your prompt: ${topic}`;
             postOutput.textContent = data.responseText;
             resultContainer.style.display = 'block';
-            copyButton.style.display = 'inline-block'; // Show the copy button along with the result
+            copyButton.style.display = 'inline-block';
+            regenerateButton.style.display = 'inline-block';
     
             // Render search queries
             renderSearchQueries(data.searchQueries);
+
+            // Store this successful submission for the regenerate feature
+            lastSubmission.topic = topic;
+            lastSubmission.tone = tone;
     
             // Add to history
             const historyEntry = {
@@ -104,7 +115,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 responseText: data.responseText,
                 searchQueries: data.searchQueries || []
             };
-            addToHistory(historyEntry);
+            // Only add to history if it's a new generation, not a regeneration
+            if (!isRegeneration) {
+                addToHistory(historyEntry);
+            }
         } catch (error) {
             console.error('Fetch Error:', error);
             // The error message is now more descriptive thanks to the logic above.
@@ -115,6 +129,11 @@ document.addEventListener('DOMContentLoaded', () => {
             generateButton.classList.remove('loading');
             generateButton.disabled = false;
         }
+    };
+
+    postGeneratorForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        handleGeneration(false);
     });
 
     // Add click event listener for the copy button
@@ -126,6 +145,11 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error copying text: ', err);
             alert('Failed to copy text.');
         });
+    });
+
+    // Add click event listener for the regenerate button
+    regenerateButton.addEventListener('click', () => {
+        handleGeneration(true);
     });
 
     // Add keydown event listener to the textarea to submit on "Enter"
@@ -178,13 +202,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 postOutput.textContent = entry.responseText;
                 resultContainer.style.display = 'block';
                 copyButton.style.display = 'inline-block';
+                regenerateButton.style.display = 'inline-block';
 
                 // Render search queries from history
                 renderSearchQueries(entry.searchQueries);
 
                 // Also, populate the form with the original inputs
                 topicTextarea.value = entry.topic;
-                document.getElementById('post-tone').value = entry.tone;
+                toneSelect.value = entry.tone;
             });
             historyList.appendChild(item);
         });
@@ -239,10 +264,34 @@ document.addEventListener('DOMContentLoaded', () => {
         updateFavicon(newTheme);
     });
 
+    // --- MOBILE SIDEBAR MANAGEMENT ---
+    const toggleSidebar = () => {
+        const isSidebarOpen = sidebar.classList.contains('open');
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('active');
+        menuToggleButton.classList.toggle('open');
+        menuToggleButton.setAttribute('aria-expanded', !isSidebarOpen);
+    };
+
+    if (menuToggleButton && sidebar && overlay) {
+        menuToggleButton.addEventListener('click', toggleSidebar);
+        overlay.addEventListener('click', toggleSidebar);
+    }
+
     // --- INITIALIZATION ---
-    loadHistory();
-    updateThemeButton();
-    // The inline script in index.html handles the initial load to prevent FOUC.
-    // This call ensures consistency if the logic were to change.
-    updateFavicon(document.documentElement.getAttribute('data-theme'));
+    // Only run app-specific initializations if we are on the main page
+    if (postGeneratorForm) {
+        loadHistory();
+        updateThemeButton();
+        // The inline script in index.html handles the initial load to prevent FOUC.
+        // This call ensures consistency if the logic were to change.
+        updateFavicon(document.documentElement.getAttribute('data-theme'));
+    } else {
+        // On other pages like about.html, we might only need the theme button logic
+        updateThemeButton();
+        themeToggleButton.addEventListener('click', () => {
+            // This is a simplified listener for pages without the full script context
+            window.location.reload(); // Simple way to apply theme changes on other pages
+        });
+    }
 });
